@@ -70,3 +70,52 @@ class ToolLoopingClient:
 def test_max_turns_forces_final_answer(conn):
     r = triage("VPN keeps dropping", conn=conn, client=ToolLoopingClient(), max_turns=2)
     assert r["category"] == "network" and r["tools_used"] == ["search_kb", "search_kb"]
+
+
+class SubmitToolClient:
+    """Investigates with one tool, then answers through the submit_triage tool."""
+    def __init__(self):
+        self.turn = 0
+
+    def chat(self, messages, tools=None):
+        self.turn += 1
+        if self.turn == 1:
+            return {"role": "assistant", "content": None, "tool_calls": [
+                {"id": "c1", "type": "function", "function": {"name": "search_kb", "arguments": json.dumps({"query": "dock"})}}]}
+        return {"role": "assistant", "content": None, "tool_calls": [
+            {"id": "c2", "type": "function", "function": {"name": "submit_triage", "arguments": json.dumps({
+                "category": "hardware", "priority": "P3", "assigned_team": "service_desk", "escalate": False,
+                "summary": "Dock", "reply_to_user": "Try another port"})}}]}
+
+
+def test_submit_tool_ends_the_loop(conn):
+    r = triage("Dock not showing display", conn=conn, client=SubmitToolClient())
+    assert r["category"] == "hardware" and r["tools_used"] == ["search_kb"]
+
+
+class ForgetfulClient:
+    """Answers in prose first; after the reminder it uses submit_triage."""
+    def __init__(self):
+        self.calls = 0
+
+    def chat(self, messages, tools=None):
+        self.calls += 1
+        if self.calls == 1:
+            return {"role": "assistant", "content": "This looks like a VPN issue."}
+        assert "submit_triage" in messages[-1]["content"]
+        return {"role": "assistant", "content": None, "tool_calls": [
+            {"id": "c1", "type": "function", "function": {"name": "submit_triage", "arguments": json.dumps({
+                "category": "network", "priority": "P3", "assigned_team": "service_desk", "escalate": False,
+                "summary": "VPN", "reply_to_user": "Update the client"})}}]}
+
+
+def test_agent_reminds_model_to_submit(conn):
+    r = triage("VPN drops", conn=conn, client=ForgetfulClient())
+    assert r["category"] == "network"
+
+
+def test_guardrail_routes_admin_requests_to_cloud_team():
+    t = Triage(category="cloud_access", priority="P4", assigned_team="service_desk", escalate=False,
+               summary="s", reply_to_user="r")
+    t = apply_guardrails(t, "Can you make me an AWS admin?")
+    assert (t.assigned_team, t.escalate) == ("cloud_team", True)
