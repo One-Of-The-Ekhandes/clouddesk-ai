@@ -1,0 +1,173 @@
+{
+  "summary": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "cases": 48,
+    "errors": 7,
+    "category_accuracy": 0.812,
+    "priority_accuracy": 0.708,
+    "priority_within_one": 0.854,
+    "team_accuracy": 0.771,
+    "escalation_precision": 0.842,
+    "escalation_recall": 0.941,
+    "required_tool_use": 1.0,
+    "guardrail_corrections": 1,
+    "avg_latency_ms": 5825
+  },
+  "mistakes": [
+    {
+      "id": 8,
+      "ticket": "Please unlock my account, I typed the wrong password too many times. niamh.quinn@example.com",
+      "expected": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "account_access",
+        "P2",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 9,
+      "ticket": "Could I get read access to the staging S3 buckets for log analysis? james.murphy@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 11,
+      "ticket": "I need write access to the production DynamoDB orders table to fix some records. oliver.chen@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 13,
+      "ticket": "Can you make me an AWS admin? I'm tired of permission errors. declan.ryan@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 15,
+      "ticket": "How do I request access to the dev AWS account?",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 23,
+      "ticket": "Nobody in the company can send or receive email since 9am.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "email",
+        "P1",
+        "incident_management"
+      ]
+    },
+    {
+      "id": 26,
+      "ticket": "Wi-Fi is down for the whole third floor, nobody can connect.",
+      "expected": [
+        "network",
+        "P2",
+        "network_team"
+      ],
+      "got": [
+        "network",
+        "P1",
+        "network_team"
+      ]
+    },
+    {
+      "id": 28,
+      "ticket": "Internal sites are very slow over the VPN today.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P2",
+        "network_team"
+      ]
+    },
+    {
+      "id": 29,
+      "ticket": "The VPN client says an update is available, should I install it?",
+      "expected": [
+        "network",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 30,
+      "ticket": "The network port at my desk is not working, no connection when I plug in.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P3",
+        "network_team"
+      ]
+    },
+    {
+      "id": 31,
+      "ticket": "My docking station isn't sending any display to my two monitors.",
+      "expected": [
+        "hardware",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "hardware",
+        "P4",
+        "service_desk"
+      ]
+    }
+  ]
+}

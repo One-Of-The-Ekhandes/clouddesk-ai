@@ -1,0 +1,173 @@
+{
+  "summary": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "cases": 48,
+    "errors": 0,
+    "category_accuracy": 0.917,
+    "priority_accuracy": 0.875,
+    "priority_within_one": 1.0,
+    "team_accuracy": 0.917,
+    "escalation_precision": 0.842,
+    "escalation_recall": 0.941,
+    "required_tool_use": 1.0,
+    "guardrail_corrections": 0,
+    "avg_latency_ms": 5643
+  },
+  "mistakes": [
+    {
+      "id": 6,
+      "ticket": "Teams keeps asking me for my password over and over since this morning.",
+      "expected": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "security",
+        "P2",
+        "security_team"
+      ]
+    },
+    {
+      "id": 8,
+      "ticket": "Please unlock my account, I typed the wrong password too many times. niamh.quinn@example.com",
+      "expected": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "account_access",
+        "P2",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 9,
+      "ticket": "Could I get read access to the staging S3 buckets for log analysis? james.murphy@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 12,
+      "ticket": "Please give me access to the analytics S3 buckets and Athena for sales reporting. tom.kelly@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 13,
+      "ticket": "Can you make me an AWS admin? I'm tired of permission errors. declan.ryan@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 23,
+      "ticket": "Nobody in the company can send or receive email since 9am.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "email",
+        "P1",
+        "incident_management"
+      ]
+    },
+    {
+      "id": 28,
+      "ticket": "Internal sites are very slow over the VPN today.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P2",
+        "network_team"
+      ]
+    },
+    {
+      "id": 29,
+      "ticket": "The VPN client says an update is available, should I install it?",
+      "expected": [
+        "network",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 30,
+      "ticket": "The network port at my desk is not working, no connection when I plug in.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P3",
+        "network_team"
+      ]
+    },
+    {
+      "id": 38,
+      "ticket": "Docker Desktop is asking me to sign in with a licence, can you assign one?",
+      "expected": [
+        "software",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 44,
+      "ticket": "I think someone created inbox rules in my mailbox that forward my email outside the company.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "email",
+        "P2",
+        "security_team"
+      ]
+    }
+  ]
+}

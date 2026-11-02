@@ -1,0 +1,131 @@
+{
+  "summary": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "cases": 48,
+    "errors": 10,
+    "category_accuracy": 0.771,
+    "priority_accuracy": 0.646,
+    "priority_within_one": 0.771,
+    "team_accuracy": 0.688,
+    "escalation_precision": 0.812,
+    "escalation_recall": 0.867,
+    "required_tool_use": 1.0,
+    "guardrail_corrections": 0,
+    "avg_latency_ms": 6120
+  },
+  "mistakes": [
+    {
+      "id": 5,
+      "ticket": "How do I set up self-service password reset for my account?",
+      "expected": [
+        "account_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 8,
+      "ticket": "Please unlock my account, I typed the wrong password too many times. niamh.quinn@example.com",
+      "expected": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "account_access",
+        "P2",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 11,
+      "ticket": "I need write access to the production DynamoDB orders table to fix some records. oliver.chen@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 12,
+      "ticket": "Please give me access to the analytics S3 buckets and Athena for sales reporting. tom.kelly@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P2",
+        "security_team"
+      ]
+    },
+    {
+      "id": 13,
+      "ticket": "Can you make me an AWS admin? I'm tired of permission errors. declan.ryan@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 15,
+      "ticket": "How do I request access to the dev AWS account?",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 28,
+      "ticket": "Internal sites are very slow over the VPN today.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P2",
+        "network_team"
+      ]
+    },
+    {
+      "id": 43,
+      "ticket": "Antivirus says it quarantined a file I downloaded from a supplier email.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "software",
+        "P3",
+        "service_desk"
+      ]
+    }
+  ]
+}

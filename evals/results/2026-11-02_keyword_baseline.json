@@ -1,0 +1,327 @@
+{
+  "summary": {
+    "provider": "mock",
+    "model": "mock",
+    "cases": 48,
+    "errors": 0,
+    "category_accuracy": 0.708,
+    "priority_accuracy": 0.562,
+    "priority_within_one": 0.917,
+    "team_accuracy": 0.792,
+    "escalation_precision": 1.0,
+    "escalation_recall": 0.412,
+    "required_tool_use": 1.0,
+    "guardrail_corrections": 1,
+    "avg_latency_ms": 0
+  },
+  "mistakes": [
+    {
+      "id": 11,
+      "ticket": "I need write access to the production DynamoDB orders table to fix some records. oliver.chen@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 12,
+      "ticket": "Please give me access to the analytics S3 buckets and Athena for sales reporting. tom.kelly@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 13,
+      "ticket": "Can you make me an AWS admin? I'm tired of permission errors. declan.ryan@example.com",
+      "expected": [
+        "cloud_access",
+        "P4",
+        "cloud_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "cloud_team"
+      ]
+    },
+    {
+      "id": 17,
+      "ticket": "Our staging S3 bucket was made public by mistake and has customer files in it, please lock it down now.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 18,
+      "ticket": "I accidentally pushed my AWS access keys to a public GitHub repo an hour ago.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "cloud_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 20,
+      "ticket": "Emails to our customer at contoso.com keep bouncing with error 550 5.7.1.",
+      "expected": [
+        "email",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 22,
+      "ticket": "Please create a new shared mailbox for the events team.",
+      "expected": [
+        "email",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "email",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 23,
+      "ticket": "Nobody in the company can send or receive email since 9am.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "email",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 24,
+      "ticket": "I got an email asking me to confirm my password on a strange website and I entered it.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 28,
+      "ticket": "Internal sites are very slow over the VPN today.",
+      "expected": [
+        "network",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "network",
+        "P2",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 31,
+      "ticket": "My docking station isn't sending any display to my two monitors.",
+      "expected": [
+        "hardware",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 33,
+      "ticket": "Some keyboard keys are sticking, can I get a replacement keyboard?",
+      "expected": [
+        "hardware",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "hardware",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 37,
+      "ticket": "Please install Power BI Desktop on my laptop. sinead.byrne@example.com",
+      "expected": [
+        "software",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "hardware",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 38,
+      "ticket": "Docker Desktop is asking me to sign in with a licence, can you assign one?",
+      "expected": [
+        "software",
+        "P4",
+        "service_desk"
+      ],
+      "got": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 39,
+      "ticket": "Excel crashes every time I open the budget file.",
+      "expected": [
+        "software",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 41,
+      "ticket": "Teams keeps crashing after the latest update.",
+      "expected": [
+        "software",
+        "P3",
+        "service_desk"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 42,
+      "ticket": "I got an MFA prompt on my phone that I didn't trigger, three times this morning. tom.kelly@example.com",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "account_access",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 43,
+      "ticket": "Antivirus says it quarantined a file I downloaded from a supplier email.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "email",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 44,
+      "ticket": "I think someone created inbox rules in my mailbox that forward my email outside the company.",
+      "expected": [
+        "security",
+        "P2",
+        "security_team"
+      ],
+      "got": [
+        "email",
+        "P3",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 46,
+      "ticket": "Payments API is down and customers can't check out.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 47,
+      "ticket": "Jira and Confluence are down for the whole company.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    },
+    {
+      "id": 48,
+      "ticket": "Production database CPU is at 100% and the app is timing out for customers.",
+      "expected": [
+        "outage",
+        "P1",
+        "incident_management"
+      ],
+      "got": [
+        "software",
+        "P4",
+        "service_desk"
+      ]
+    }
+  ]
+}
