@@ -1,0 +1,128 @@
+"""The triage agent: an LLM tool-calling loop plus rule-based guardrails."""
+from __future__ import annotations
+
+import json
+import re
+import sqlite3
+import time
+from typing import Literal
+
+from pydantic import BaseModel, Field, ValidationError
+
+from . import db
+from .config import Settings, get_settings
+from .llm import LLMError, MockChatClient, OpenAIChatClient
+from .tools import TOOL_SPECS, run_tool
+
+Category = Literal["account_access", "cloud_access", "email", "network", "hardware", "software", "security", "outage"]
+Priority = Literal["P1", "P2", "P3", "P4"]
+Team = Literal["service_desk", "cloud_team", "security_team", "network_team", "incident_management"]
+
+SYSTEM_PROMPT = """You are CloudDesk, a first-line IT and cloud service-desk agent.
+Investigate the ticket with your tools before deciding: search the knowledge base, look up the user
+when an email or username is given, and check AWS IAM access when the ticket names an AWS action or resource.
+
+Priorities:
+- P1: production outage or service down affecting customers or many users.
+- P2: security incident, or one user fully blocked with an urgent business deadline, or a whole floor/site affected.
+- P3: one user impaired with a standard fix (lockout, VPN, access to non-production, email problems).
+- P4: requests and how-to questions (software installs, new access that is not blocking work).
+
+Teams: service_desk (handles it directly), cloud_team (AWS changes the service desk cannot make,
+production access), security_team (any possible security incident), network_team (site-wide network
+problems), incident_management (outages).
+
+Reply with ONLY a JSON object, no other text:
+{"category": one of account_access|cloud_access|email|network|hardware|software|security|outage,
+ "priority": "P1"|"P2"|"P3"|"P4",
+ "assigned_team": one of the teams above,
+ "escalate": true if assigned_team is not service_desk,
+ "summary": one sentence,
+ "reply_to_user": a short, friendly reply with the next steps for the user,
+ "internal_notes": what you checked and found, for the engineer}"""
+
+
+class Triage(BaseModel):
+    category: Category
+    priority: Priority
+    assigned_team: Team
+    escalate: bool
+    summary: str
+    reply_to_user: str
+    internal_notes: str = ""
+    tools_used: list[str] = Field(default_factory=list)
+    guardrails: list[str] = Field(default_factory=list)
+
+
+def make_client(settings: Settings):
+    return MockChatClient(settings) if settings.provider == "mock" else OpenAIChatClient(settings)
+
+
+def _parse_json(content: str) -> dict:
+    match = re.search(r"\{.*\}", content or "", re.S)
+    if not match:
+        raise ValueError("model did not return a JSON object")
+    return json.loads(match.group(0))
+
+
+def apply_guardrails(t: Triage, ticket: str) -> Triage:
+    """Hard rules that hold whatever the model says. Each change is recorded."""
+    notes = []
+    if t.category == "outage" and t.priority != "P1":
+        t.priority = "P1"; notes.append("outage forced to P1")
+    if t.category == "outage" and t.assigned_team != "incident_management":
+        t.assigned_team = "incident_management"; notes.append("outage routed to incident_management")
+    if t.category == "security" and t.assigned_team != "security_team":
+        t.assigned_team = "security_team"; notes.append("security routed to security_team")
+    if t.category == "security" and t.priority in ("P3", "P4"):
+        t.priority = "P2"; notes.append("security raised to P2")
+    text = ticket.lower()
+    if (t.category == "cloud_access" and re.search(r"\b(prod|production)\b", text)
+            and re.search(r"\b(write|put|delete|modify|admin)\b", text) and t.assigned_team == "service_desk"):
+        t.assigned_team = "cloud_team"; notes.append("production write access routed to cloud_team")
+    if t.escalate != (t.assigned_team != "service_desk"):
+        t.escalate = t.assigned_team != "service_desk"; notes.append("escalate flag aligned with team")
+    t.guardrails = notes
+    return t
+
+
+def triage(ticket: str, conn: sqlite3.Connection | None = None, settings: Settings | None = None,
+           client=None, max_turns: int = 5, log: bool = True) -> dict:
+    settings = settings or get_settings()
+    conn = conn or db.connect()
+    client = client or make_client(settings)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": ticket}]
+    tools_used: list[str] = []
+    started = time.perf_counter()
+
+    for _ in range(max_turns):
+        msg = client.chat(messages, tools=TOOL_SPECS)
+        calls = msg.get("tool_calls") or []
+        if not calls:
+            break
+        messages.append({"role": "assistant", "content": msg.get("content") or "", "tool_calls": calls})
+        for call in calls:
+            name = call["function"]["name"]
+            try:
+                args = json.loads(call["function"].get("arguments") or "{}")
+            except json.JSONDecodeError:
+                args = {}
+            result = run_tool(conn, name, args)
+            tools_used.append(name)
+            messages.append({"role": "tool", "tool_call_id": call["id"], "name": name,
+                             "content": json.dumps(result, default=str)})
+    else:  # ran out of turns while still calling tools: ask for the answer without tools
+        msg = client.chat(messages + [{"role": "user", "content": "Give your final JSON answer now."}])
+
+    try:
+        data = _parse_json(msg.get("content") or "")
+        result = Triage(**{k: v for k, v in data.items() if k in Triage.model_fields}, tools_used=tools_used)
+    except (ValueError, ValidationError) as exc:
+        raise LLMError(f"Could not parse a valid triage answer: {exc}") from exc
+
+    result = apply_guardrails(result, ticket)
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    out = result.model_dump() | {"provider": settings.provider, "model": settings.model, "latency_ms": latency_ms}
+    if log:
+        out["log_id"] = db.log_triage(conn, ticket, out, settings.provider, latency_ms)
+    return out
