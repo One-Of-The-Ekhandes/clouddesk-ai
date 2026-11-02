@@ -1,0 +1,48 @@
+{"id": 1, "ticket": "I'm locked out of my laptop again after changing my password yesterday. aoife.oconnor@example.com", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 2, "ticket": "My password expired while I'm travelling in Berlin and I can't connect to change it. mark.doyle@example.com", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 3, "ticket": "I got a new phone and my authenticator app codes no longer work. sinead.byrne@example.com", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 4, "ticket": "URGENT: I'm locked out and I have a client demo in 30 minutes! niamh.quinn@example.com", "category": "account_access", "priority": "P2", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 5, "ticket": "How do I set up self-service password reset for my account?", "category": "account_access", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 6, "ticket": "Teams keeps asking me for my password over and over since this morning.", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 7, "ticket": "I forgot my password, can you reset it please? tom.kelly@example.com", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 8, "ticket": "Please unlock my account, I typed the wrong password too many times. niamh.quinn@example.com", "category": "account_access", "priority": "P3", "team": "service_desk", "must_use": ["lookup_user"]}
+{"id": 9, "ticket": "Could I get read access to the staging S3 buckets for log analysis? james.murphy@example.com", "category": "cloud_access", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 10, "ticket": "Getting AccessDenied for lambda:UpdateFunctionCode when deploying the orders service to dev. priya.nair@example.com", "category": "cloud_access", "priority": "P3", "team": "cloud_team", "must_use": ["check_iam_access"]}
+{"id": 11, "ticket": "I need write access to the production DynamoDB orders table to fix some records. oliver.chen@example.com", "category": "cloud_access", "priority": "P4", "team": "cloud_team", "must_use": []}
+{"id": 12, "ticket": "Please give me access to the analytics S3 buckets and Athena for sales reporting. tom.kelly@example.com", "category": "cloud_access", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 13, "ticket": "Can you make me an AWS admin? I'm tired of permission errors. declan.ryan@example.com", "category": "cloud_access", "priority": "P4", "team": "cloud_team", "must_use": []}
+{"id": 14, "ticket": "Terraform apply fails with UnauthorizedOperation for ec2:RunInstances in the dev account. james.murphy@example.com", "category": "cloud_access", "priority": "P3", "team": "cloud_team", "must_use": ["check_iam_access"]}
+{"id": 15, "ticket": "How do I request access to the dev AWS account?", "category": "cloud_access", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 16, "ticket": "AccessDenied on s3:PutObject when I upload reports to the staging bucket. james.murphy@example.com", "category": "cloud_access", "priority": "P3", "team": "cloud_team", "must_use": ["check_iam_access"]}
+{"id": 17, "ticket": "Our staging S3 bucket was made public by mistake and has customer files in it, please lock it down now.", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 18, "ticket": "I accidentally pushed my AWS access keys to a public GitHub repo an hour ago.", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 19, "ticket": "The finance shared mailbox is not showing in my Outlook. mark.doyle@example.com", "category": "email", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 20, "ticket": "Emails to our customer at contoso.com keep bouncing with error 550 5.7.1.", "category": "email", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 21, "ticket": "My Outlook calendar invites are not syncing to my phone.", "category": "email", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 22, "ticket": "Please create a new shared mailbox for the events team.", "category": "email", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 23, "ticket": "Nobody in the company can send or receive email since 9am.", "category": "outage", "priority": "P1", "team": "incident_management", "must_use": []}
+{"id": 24, "ticket": "I got an email asking me to confirm my password on a strange website and I entered it.", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 25, "ticket": "VPN disconnects every 10 minutes when I work from home. rahul.mehta@example.com", "category": "network", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 26, "ticket": "Wi-Fi is down for the whole third floor, nobody can connect.", "category": "network", "priority": "P2", "team": "network_team", "must_use": []}
+{"id": 27, "ticket": "I can't connect to the office Wi-Fi on my laptop but my colleagues are fine.", "category": "network", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 28, "ticket": "Internal sites are very slow over the VPN today.", "category": "network", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 29, "ticket": "The VPN client says an update is available, should I install it?", "category": "network", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 30, "ticket": "The network port at my desk is not working, no connection when I plug in.", "category": "network", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 31, "ticket": "My docking station isn't sending any display to my two monitors.", "category": "hardware", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 32, "ticket": "My laptop won't charge with the USB-C charger anymore.", "category": "hardware", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 33, "ticket": "Some keyboard keys are sticking, can I get a replacement keyboard?", "category": "hardware", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 34, "ticket": "My laptop won't turn on at all and I have a board presentation in an hour.", "category": "hardware", "priority": "P2", "team": "service_desk", "must_use": []}
+{"id": 35, "ticket": "I'd like to request a second monitor for my desk.", "category": "hardware", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 36, "ticket": "My second screen keeps flickering.", "category": "hardware", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 37, "ticket": "Please install Power BI Desktop on my laptop. sinead.byrne@example.com", "category": "software", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 38, "ticket": "Docker Desktop is asking me to sign in with a licence, can you assign one?", "category": "software", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 39, "ticket": "Excel crashes every time I open the budget file.", "category": "software", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 40, "ticket": "Can I install Notepad++? It's not in the company portal.", "category": "software", "priority": "P4", "team": "service_desk", "must_use": []}
+{"id": 41, "ticket": "Teams keeps crashing after the latest update.", "category": "software", "priority": "P3", "team": "service_desk", "must_use": []}
+{"id": 42, "ticket": "I got an MFA prompt on my phone that I didn't trigger, three times this morning. tom.kelly@example.com", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 43, "ticket": "Antivirus says it quarantined a file I downloaded from a supplier email.", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 44, "ticket": "I think someone created inbox rules in my mailbox that forward my email outside the company.", "category": "security", "priority": "P2", "team": "security_team", "must_use": []}
+{"id": 45, "ticket": "The customer portal is returning 503 errors for everyone.", "category": "outage", "priority": "P1", "team": "incident_management", "must_use": []}
+{"id": 46, "ticket": "Payments API is down and customers can't check out.", "category": "outage", "priority": "P1", "team": "incident_management", "must_use": []}
+{"id": 47, "ticket": "Jira and Confluence are down for the whole company.", "category": "outage", "priority": "P1", "team": "incident_management", "must_use": []}
+{"id": 48, "ticket": "Production database CPU is at 100% and the app is timing out for customers.", "category": "outage", "priority": "P1", "team": "incident_management", "must_use": []}
