@@ -1,0 +1,9 @@
+[project]
+name = "clouddesk-ai"
+version = "0.1.0"
+description = "LLM service-desk agent for IT and cloud support tickets"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
