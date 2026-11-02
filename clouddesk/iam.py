@@ -44,7 +44,7 @@ class SnapshotIam:
         candidates = [g for g in self.groups
                       if g not in user["groups"] and self._policies_allow(self.groups[g]["policies"], action)]
         return _result(username, action, user["groups"], granted_by, candidates,
-                       {g: self.groups[g].get("privileged", False) for g in candidates})
+                       {g: self.groups[g].get("approver", "cloud_team") for g in candidates})
 
     def audit(self) -> list[dict]:
         findings = []
@@ -84,7 +84,7 @@ class AwsIam:
                 if g["GroupName"] not in groups and self._simulate(g["Arn"], action):
                     candidates.append(g["GroupName"])
         return _result(username, action, groups, granted_by, candidates,
-                       {g: g.startswith("prod") for g in candidates})
+                       {g: "service_desk" if g in ("dev-readonly", "data-analysts") else "cloud_team" for g in candidates})
 
     def _simulate(self, arn: str, action: str) -> bool:
         res = self.iam.simulate_principal_policy(PolicySourceArn=arn, ActionNames=[action])
@@ -109,18 +109,18 @@ class AwsIam:
         return findings
 
 
-def _result(username, action, groups, granted_by, candidates, privileged) -> dict:
+def _result(username, action, groups, granted_by, candidates, approver) -> dict:
     allowed = bool(granted_by)
     if allowed:
         rec = f"Already allowed via {', '.join(granted_by)}. Check the resource policy or the region if it still fails."
     elif not candidates:
         rec = "No existing group grants this action. Escalate to the cloud team with the action, resource and business reason."
-    elif all(privileged[c] for c in candidates):
-        rec = (f"Only privileged group(s) grant this: {', '.join(candidates)}. "
-               "Needs manager approval and cloud team sign-off; escalate.")
+    elif all(approver[c] == "cloud_team" for c in candidates):
+        rec = (f"Granted only by cloud-team-approved group(s): {', '.join(candidates)}. "
+               "Escalate to the cloud team for approval.")
     else:
-        safe = [c for c in candidates if not privileged[c]]
-        rec = f"Add the user to group '{safe[0]}' (least privilege). Service desk can action this for non-production."
+        safe = [c for c in candidates if approver[c] == "service_desk"]
+        rec = f"Add the user to group '{safe[0]}' (least privilege, read access). The service desk can make this change."
     return {"username": username, "action": action, "found": True, "groups": groups, "allowed": allowed,
             "granted_by": granted_by, "groups_that_grant": candidates, "recommendation": rec}
 

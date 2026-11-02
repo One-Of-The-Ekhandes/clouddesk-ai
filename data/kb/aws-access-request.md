@@ -11,5 +11,7 @@ Standard groups:
 - data-analysts: Athena queries and read access to the analytics S3 buckets.
 - prod-operators: production changes; needs manager approval and cloud team sign-off.
 
-Read access to non-production can be handled by the service desk by adding the user to the right group.
-Any production write access, or any request that matches no group, goes to the cloud team.
+Who approves:
+- dev-readonly and data-analysts (read access): the service desk adds the user to the group.
+- dev-deployers (deploy rights) and prod-operators (production): the cloud team approves and makes the change.
+- Any request that matches no group goes to the cloud team.

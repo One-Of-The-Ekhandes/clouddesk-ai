@@ -1,28 +1,149 @@
 {
   "_note": "Synthetic offline IAM snapshot. Managed-policy permissions are simplified to action patterns for offline checks; live mode uses the real AWS IAM policy simulator.",
   "policies": {
-    "AdministratorAccess": {"allow": ["*"], "deny": []},
-    "PowerUserAccess": {"allow": ["*"], "deny": ["iam:*", "organizations:*", "account:*"]},
-    "ReadOnlyAccess": {"allow": ["*:Get*", "*:List*", "*:Describe*"], "deny": []},
-    "AmazonS3ReadOnlyAccess": {"allow": ["s3:Get*", "s3:List*"], "deny": []},
-    "AWSLambda_FullAccess": {"allow": ["lambda:*"], "deny": []},
-    "AmazonAthenaFullAccess": {"allow": ["athena:*", "glue:Get*"], "deny": []},
-    "AmazonDynamoDBReadOnlyAccess": {"allow": ["dynamodb:Get*", "dynamodb:BatchGet*", "dynamodb:Query", "dynamodb:Scan", "dynamodb:Describe*", "dynamodb:List*"], "deny": []}
+    "AdministratorAccess": {
+      "allow": [
+        "*"
+      ],
+      "deny": []
+    },
+    "PowerUserAccess": {
+      "allow": [
+        "*"
+      ],
+      "deny": [
+        "iam:*",
+        "organizations:*",
+        "account:*"
+      ]
+    },
+    "ReadOnlyAccess": {
+      "allow": [
+        "*:Get*",
+        "*:List*",
+        "*:Describe*"
+      ],
+      "deny": []
+    },
+    "AmazonS3ReadOnlyAccess": {
+      "allow": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "deny": []
+    },
+    "AWSLambda_FullAccess": {
+      "allow": [
+        "lambda:*"
+      ],
+      "deny": []
+    },
+    "AmazonAthenaFullAccess": {
+      "allow": [
+        "athena:*",
+        "glue:Get*"
+      ],
+      "deny": []
+    },
+    "AmazonDynamoDBReadOnlyAccess": {
+      "allow": [
+        "dynamodb:Get*",
+        "dynamodb:BatchGet*",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:Describe*",
+        "dynamodb:List*"
+      ],
+      "deny": []
+    }
   },
   "groups": {
-    "dev-readonly": {"policies": ["ReadOnlyAccess"], "description": "Read-only access to development and staging"},
-    "dev-deployers": {"policies": ["AWSLambda_FullAccess"], "description": "Deploy Lambda functions in development"},
-    "data-analysts": {"policies": ["AmazonAthenaFullAccess", "AmazonS3ReadOnlyAccess"], "description": "Athena queries and analytics buckets"},
-    "prod-operators": {"policies": ["PowerUserAccess"], "description": "Production changes; manager and cloud team approval required", "privileged": true}
+    "dev-readonly": {
+      "policies": [
+        "ReadOnlyAccess"
+      ],
+      "description": "Read-only access to development and staging",
+      "approver": "service_desk"
+    },
+    "dev-deployers": {
+      "policies": [
+        "AWSLambda_FullAccess"
+      ],
+      "description": "Deploy Lambda functions in development",
+      "approver": "cloud_team"
+    },
+    "data-analysts": {
+      "policies": [
+        "AmazonAthenaFullAccess",
+        "AmazonS3ReadOnlyAccess"
+      ],
+      "description": "Athena queries and analytics buckets",
+      "approver": "service_desk"
+    },
+    "prod-operators": {
+      "policies": [
+        "PowerUserAccess"
+      ],
+      "description": "Production changes; manager and cloud team approval required",
+      "approver": "cloud_team"
+    }
   },
   "users": {
-    "jmurphy": {"groups": ["dev-readonly"], "attached_policies": [], "mfa": true},
-    "pnair": {"groups": ["dev-readonly"], "attached_policies": [], "mfa": true},
-    "rmehta": {"groups": ["data-analysts"], "attached_policies": [], "mfa": true},
-    "ochen": {"groups": ["data-analysts"], "attached_policies": [], "mfa": true},
-    "dryan": {"groups": ["prod-operators"], "attached_policies": ["AdministratorAccess"], "mfa": true},
-    "lfernandez": {"groups": ["dev-readonly"], "attached_policies": [], "mfa": true},
-    "cwalsh": {"groups": ["dev-readonly"], "attached_policies": [], "mfa": false},
-    "tkelly": {"groups": [], "attached_policies": [], "mfa": false}
+    "jmurphy": {
+      "groups": [
+        "dev-readonly"
+      ],
+      "attached_policies": [],
+      "mfa": true
+    },
+    "pnair": {
+      "groups": [
+        "dev-readonly"
+      ],
+      "attached_policies": [],
+      "mfa": true
+    },
+    "rmehta": {
+      "groups": [
+        "data-analysts"
+      ],
+      "attached_policies": [],
+      "mfa": true
+    },
+    "ochen": {
+      "groups": [
+        "data-analysts"
+      ],
+      "attached_policies": [],
+      "mfa": true
+    },
+    "dryan": {
+      "groups": [
+        "prod-operators"
+      ],
+      "attached_policies": [
+        "AdministratorAccess"
+      ],
+      "mfa": true
+    },
+    "lfernandez": {
+      "groups": [
+        "dev-readonly"
+      ],
+      "attached_policies": [],
+      "mfa": true
+    },
+    "cwalsh": {
+      "groups": [
+        "dev-readonly"
+      ],
+      "attached_policies": [],
+      "mfa": false
+    },
+    "tkelly": {
+      "groups": [],
+      "attached_policies": [],
+      "mfa": false
+    }
   }
 }
