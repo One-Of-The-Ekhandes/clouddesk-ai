@@ -1,0 +1,123 @@
+"""Chat-completion clients.
+
+OpenAIChatClient talks to any OpenAI-compatible endpoint (Groq, Gemini, Ollama).
+MockChatClient is a deterministic, rule-based stand-in used for offline tests and CI:
+it follows the same tool-calling protocol, so the agent loop is exercised without an API key.
+"""
+from __future__ import annotations
+
+import json
+import re
+import time
+import uuid
+
+import httpx
+
+from .config import Settings
+
+
+class LLMError(RuntimeError):
+    pass
+
+
+class OpenAIChatClient:
+    def __init__(self, settings: Settings, timeout: float = 60.0, max_retries: int = 4):
+        if not settings.api_key and settings.provider != "ollama":
+            raise LLMError(f"No API key set for provider '{settings.provider}'. Add it to .env.")
+        self.settings = settings
+        self.max_retries = max_retries
+        headers = {"Authorization": f"Bearer {settings.api_key}"} if settings.api_key else {}
+        self.http = httpx.Client(base_url=settings.base_url, headers=headers, timeout=timeout)
+
+    def chat(self, messages: list[dict], tools: list[dict] | None = None) -> dict:
+        payload = {"model": self.settings.model, "messages": messages, "temperature": 0}
+        if tools:
+            payload["tools"] = tools
+            payload["tool_choice"] = "auto"
+        for attempt in range(self.max_retries + 1):
+            resp = self.http.post("/chat/completions", json=payload)
+            if resp.status_code == 429 or resp.status_code >= 500:
+                if attempt == self.max_retries:
+                    break
+                wait = float(resp.headers.get("retry-after", 2 ** attempt))
+                time.sleep(min(wait, 30))
+                continue
+            if resp.status_code >= 400:
+                raise LLMError(f"{self.settings.provider} returned {resp.status_code}: {resp.text[:300]}")
+            return resp.json()["choices"][0]["message"]
+        raise LLMError(f"{self.settings.provider} still rate-limited or failing after {self.max_retries} retries")
+
+
+# ---------------------------------------------------------------- offline mock
+
+RULES = [  # (category, keywords) checked in order; first match wins
+    ("outage", r"\b(outage|down for everyone|503|500 error|all customers|whole team|everyone|site is down|production is down)\b"),
+    ("security", r"\b(phishing|suspicious|hacked|compromised|malware|unknown (mfa|login)|clicked a link)\b"),
+    ("cloud_access", r"\b(aws|s3|lambda|dynamodb|athena|iam|accessdenied|access denied|not authorized|ec2|bucket)\b"),
+    ("account_access", r"\b(locked|lockout|password|mfa|authenticator|sign in|log in|login|can't access my account)\b"),
+    ("network", r"\b(vpn|wi-?fi|network|internet|connection)\b"),
+    ("email", r"\b(outlook|email|mailbox|bounce|ndr|calendar)\b"),
+    ("hardware", r"\b(laptop|dock|monitor|screen|keyboard|battery|charger)\b"),
+    ("software", r"\b(install|licen[cs]e|software|update|application crash|app crash)\b"),
+]
+TEAM = {"outage": "incident_management", "security": "security_team"}
+ACTION_RE = re.compile(r"\b([a-z0-9]+:[A-Za-z*]+)\b")
+
+
+class MockChatClient:
+    """Rule-based fake LLM. Turn 1 asks for tools; turn 2 returns the triage JSON."""
+
+    def __init__(self, settings: Settings | None = None):
+        self.settings = settings
+
+    def chat(self, messages: list[dict], tools: list[dict] | None = None) -> dict:
+        ticket = next(m["content"] for m in messages if m["role"] == "user")
+        tool_msgs = [m for m in messages if m["role"] == "tool"]
+        if not tool_msgs and tools:
+            return {"role": "assistant", "content": None, "tool_calls": self._plan(ticket)}
+        return {"role": "assistant", "content": json.dumps(self._decide(ticket, tool_msgs))}
+
+    def _plan(self, ticket: str) -> list[dict]:
+        calls = [("search_kb", {"query": ticket[:300]})]
+        email = re.search(r"[a-z]+\.[a-z]+@example\.com", ticket, re.I)
+        if email:
+            calls.append(("lookup_user", {"identifier": email.group(0)}))
+        action = ACTION_RE.search(ticket)
+        if action and email:
+            calls.append(("check_iam_access", {"identifier": email.group(0), "action": action.group(1)}))
+        return [{"id": f"call_{uuid.uuid4().hex[:8]}", "type": "function",
+                 "function": {"name": n, "arguments": json.dumps(a)}} for n, a in calls]
+
+    def _decide(self, ticket: str, tool_msgs: list[dict]) -> dict:
+        text = ticket.lower()
+        category = next((c for c, pat in RULES if re.search(pat, text)), "software")
+        results = [json.loads(m["content"]) for m in tool_msgs]
+        iam = next((r for r in results if isinstance(r, dict) and "groups_that_grant" in r), None)
+        user = next((r.get("user") for r in results if isinstance(r, dict) and "user" in r), None)
+
+        team = TEAM.get(category, "service_desk")
+        if category == "cloud_access":
+            prod_write = re.search(r"\b(prod|production)\b", text) and re.search(r"\b(write|put|delete|update|deploy)\b", text)
+            no_safe_group = iam is not None and "escalate" in iam["recommendation"].lower()
+            if prod_write or no_safe_group or re.search(r"\b(deploy|lambda|accessdenied|not authorized)\b", text):
+                team = "cloud_team"
+        if category == "network" and re.search(r"\b(floor|building|everyone|whole office)\b", text):
+            team = "network_team"
+
+        if category == "outage" or (category == "network" and team == "network_team"):
+            priority = "P1" if category == "outage" else "P2"
+        elif category == "security" or re.search(r"\b(urgent|asap|deadline|demo|presentation|today|cannot work|can't work)\b", text):
+            priority = "P2"
+        elif category in ("software",) or re.search(r"\b(request|install|how do i|could i get|please add)\b", text):
+            priority = "P4"
+        else:
+            priority = "P3"
+
+        note = f"Account status: {user['account_status']}." if user else "User not identified from ticket."
+        return {
+            "category": category, "priority": priority, "assigned_team": team,
+            "escalate": team != "service_desk",
+            "summary": ticket.strip().split("\n")[0][:120],
+            "reply_to_user": "Thanks for reporting this. We are looking into it and will update you shortly.",
+            "internal_notes": note,
+        }
