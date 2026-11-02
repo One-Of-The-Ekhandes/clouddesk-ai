@@ -13,7 +13,7 @@ load_dotenv(ROOT / ".env")
 # OpenAI-compatible chat endpoints. Groq, Gemini and Ollama all expose one,
 # so a single client works for every provider.
 PROVIDERS = {
-    "groq": ("https://api.groq.com/openai/v1", "llama-3.3-70b-versatile", "GROQ_API_KEY"),
+    "groq": ("https://api.groq.com/openai/v1", "openai/gpt-oss-120b", "GROQ_API_KEY"),
     "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai", "gemini-2.5-flash", "GEMINI_API_KEY"),
     "ollama": (os.getenv("OLLAMA_URL", "http://localhost:11434/v1"), "llama3.2", None),
 }
